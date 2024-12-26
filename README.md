@@ -1,3 +1,10 @@
+The package files are in the appstorys-sdk folder, where all the function are defined and the floater and the banner components are added.
+
+The widgets component is not in the package. (needs to be added once the httpclient issue is resolved)
+
+The home component is called in the app component and the rest of the components are called in the home component.
+
+
 # AngularSDK
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.6.
