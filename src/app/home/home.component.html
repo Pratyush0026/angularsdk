@@ -1,0 +1,31 @@
+<!-- Using @for instead of *ngFor -->
+
+<!-- <app-floater></app-floater> -->
+ <app-floater [campaigns]="data!.campaigns" [user_id]="data!.user_id"></app-floater>
+<!-- <app-banner></app-banner> -->
+
+<!-- <app-widgets></app-widgets> -->
+
+
+<div class="feature-grid">
+    @for (feature of features; track feature.title) {
+      <div class="feature-card">
+        <div class="feature-icon">{{feature.icon}}</div>
+        <h3>{{feature.title}}</h3>
+        <p>{{feature.description}}</p>
+      </div>
+    }
+  </div>
+  
+  <!-- And in the testimonials section -->
+  <div class="testimonial-grid">
+    @for (testimonial of testimonials; track testimonial.name) {
+      <div class="testimonial-card">
+        <p class="testimonial-text">"{{testimonial.comment}}"</p>
+        <div class="testimonial-author">
+          <h4>{{testimonial.name}}</h4>
+          <p>{{testimonial.role}}</p>
+        </div>
+      </div>
+    }
+  </div>
