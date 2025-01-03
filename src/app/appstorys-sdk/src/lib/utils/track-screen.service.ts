@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { StorageService } from './storage.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -9,10 +10,13 @@ import { of } from 'rxjs';
 export class TrackScreenService {
   private apiUrl = 'https://backend.appstorys.com/api/v1/users/track-screen/';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService
+  ) {}
 
   async getAccessToken(): Promise<string | null> {
-    return localStorage.getItem('access_token');
+    return this.storageService.getItem('access_token');
   }
 
   async trackScreen(appId: string, screenName: string): Promise<any[]> {

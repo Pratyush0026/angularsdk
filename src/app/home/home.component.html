@@ -1,13 +1,23 @@
-<!-- Using @for instead of *ngFor -->
+<div class="homepage-container">
+  @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+  }
 
-<!-- <app-floater></app-floater> -->
- <app-floater [campaigns]="data!.campaigns" [user_id]="data!.user_id"></app-floater>
-<!-- <app-banner></app-banner> -->
+  @if (data) {
+    <app-floater 
+      [campaigns]="data.campaigns || []" 
+      [user_id]="data.user_id">
+    </app-floater>
+    
+    <app-banner
+      [campaigns]="data.campaigns || []"
+      [user_id]="data.user_id">
+    </app-banner>
+  }
 
-<!-- <app-widgets></app-widgets> -->
-
-
-<div class="feature-grid">
+  <div class="feature-grid">
     @for (feature of features; track feature.title) {
       <div class="feature-card">
         <div class="feature-icon">{{feature.icon}}</div>
@@ -17,7 +27,6 @@
     }
   </div>
   
-  <!-- And in the testimonials section -->
   <div class="testimonial-grid">
     @for (testimonial of testimonials; track testimonial.name) {
       <div class="testimonial-card">
@@ -29,3 +38,4 @@
       </div>
     }
   </div>
+</div>

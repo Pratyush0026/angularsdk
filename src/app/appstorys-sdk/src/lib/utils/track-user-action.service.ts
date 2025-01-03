@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-
-type ActionType = 'IMP' | 'CLK' | 'CNV';
+import { StorageService } from './storage.service';
+import { ActionType } from '../types/action.types';
 
 @Injectable({
   providedIn: 'root',
@@ -11,39 +11,46 @@ type ActionType = 'IMP' | 'CLK' | 'CNV';
 export class TrackUserActionService {
   private apiUrl = 'https://backend.appstorys.com/api/v1/users/track-action/';
 
-  constructor(private http: HttpClient) {}
-
-  async getAccessToken(): Promise<string | null> {
-    return localStorage.getItem('access_token');
-  }
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService
+  ) {}
 
   async trackUserAction(
     userId: string,
     campaignId: string,
     eventType: ActionType,
     storySlide?: string
-  ): Promise<any> {
-    const accessToken = await this.getAccessToken();
-    if (!accessToken) {
-      console.error('Access token not found');
-      return;
+  ): Promise<void> {
+    try {
+      const accessToken = this.storageService.getItem('access_token');
+      if (!accessToken) {
+        throw new Error('Access token not found');
+      }
+
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      });
+
+      const body: any = { 
+        campaign_id: campaignId, 
+        user_id: userId, 
+        event_type: eventType 
+      };
+      
+      if (storySlide) {
+        body.story_slide = storySlide;
+      }
+
+      await this.http.post(this.apiUrl, body, { headers }).pipe(
+        catchError((error) => {
+          console.error('Error in trackUserAction:', error);
+          return of(null);
+        })
+      ).toPromise();
+    } catch (error) {
+      console.error('Error in trackUserAction:', error);
     }
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-    });
-
-    const body: any = { campaign_id: campaignId, user_id: userId, event_type: eventType };
-    if (storySlide) {
-      body.story_slide = storySlide;
-    }
-
-    return this.http.post(this.apiUrl, body, { headers }).pipe(
-      catchError((error) => {
-        console.error('Error in trackUserAction', error);
-        return of(null);
-      })
-    ).toPromise();
   }
 }

@@ -1,38 +1,34 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-floater',
-//   templateUrl: './floater.component.html',
-//   styleUrls: ['./floater.component.css']
-// })
-// export class FloaterComponent {
-//   onBannerClick(): void {
-//     console.log('Banner clicked!');
-//   }
-// }
-
-
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { TrackUserActionService } from '../../utils/track-user-action.service'; // Service to track actions
-import { UserData, CampaignFloater } from '../../utils/user-data.type'; // Import the UserData and CampaignFloater types
 import { CommonModule } from '@angular/common';
+import { TrackUserActionService } from '../../utils/track-user-action.service';
+import { UserData, CampaignFloater } from '../../utils/user-data.type';
+import { ActionType } from '../../types/action.types';
 
 @Component({
-  imports: [CommonModule],
   selector: 'app-floater',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './floater.component.html',
-  styleUrls: ['./floater.component.css'],
+  styleUrls: ['./floater.component.css']
 })
 export class FloaterComponent implements OnInit, OnChanges {
   @Input() campaigns: any[] = [];
   @Input() user_id: string = '';
-  access_token: string | null = null;
   data: CampaignFloater | undefined;
 
   constructor(private userActionTrackService: TrackUserActionService) {}
 
   ngOnInit(): void {
-    // Find the campaign of type 'FLT'
+    this.initializeFloater();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['campaigns']) {
+      this.initializeFloater();
+    }
+  }
+
+  private initializeFloater(): void {
     this.data = this.campaigns.find(
       (campaign: any) => campaign.campaign_type === 'FLT'
     ) as CampaignFloater;
@@ -42,44 +38,33 @@ export class FloaterComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['campaigns'] && this.campaigns) {
-      this.data = this.campaigns.find(
-        (campaign: any) => campaign.campaign_type === 'FLT'
-      ) as CampaignFloater;
-      if (this.data) {
-        this.trackImpression();
-      }
-    }
-  }
-
-  // Track impression when the floater is displayed
-  async trackImpression(): Promise<void> {
+  private async trackImpression(): Promise<void> {
     try {
       await this.userActionTrackService.trackUserAction(
         this.user_id,
         this.data?.id || '',
-        'IMP'
+        ActionType.IMPRESSION
       );
     } catch (error) {
-      console.error('Error in tracking impression:', error);
+      console.error('Error tracking impression:', error);
     }
   }
 
-  // Handle click action
   async onFloaterClick(): Promise<void> {
-    if (this.data?.details.link) {
+    if (!this.data?.id) return;
+
+    if (this.data.details.link) {
       window.open(this.data.details.link, '_blank');
     }
 
     try {
       await this.userActionTrackService.trackUserAction(
         this.user_id,
-        this.data?.id || '',
-        'CLK'
+        this.data.id,
+        ActionType.CLICK
       );
     } catch (error) {
-      console.error('Error in tracking click:', error);
+      console.error('Error tracking click:', error);
     }
   }
 }
