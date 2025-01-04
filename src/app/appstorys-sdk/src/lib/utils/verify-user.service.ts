@@ -20,9 +20,9 @@ export class VerifyUserService {
     private errorHandler: ErrorHandlerService
   ) {}
 
-  async verifyUser(userId: string, campaigns: any[], attributes?: UserAttributes): Promise<UserData | undefined> {
+  async verifyUser(userId: string, campaigns: any, attributes?: UserAttributes): Promise<UserData | undefined> {
     try {
-      if (!campaigns?.length) {
+      if (!campaigns?.campaigns.length) {
         console.warn('No campaigns found');
         return;
       }
@@ -42,7 +42,7 @@ export class VerifyUserService {
       const body = {
         user_id: userId,
         app_id: appId,
-        campaign_list: campaigns,
+        campaign_list: campaigns.campaigns,
         ...(attributes && { attributes })
       };
 

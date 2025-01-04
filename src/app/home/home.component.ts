@@ -50,7 +50,9 @@ export class HomeComponent implements OnInit {
       await this.appStorysService.verifyAccount(this.accountId, this.appId);
       const campaigns = await this.appStorysService.trackScreen(this.appId, this.screenName);
       
-      if (campaigns?.length) {
+      console.log('campaigns:', campaigns);
+      
+      if (campaigns) {
         const verifyUser = await this.appStorysService.verifyUser(this.user_id, campaigns);
         if (verifyUser) {
           this.data = verifyUser;
