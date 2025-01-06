@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TrackUserActionService } from '../../utils/track-user-action.service';
-import { CampaignBanner } from '../../utils/user-data.type';
 import { ActionType } from '../../types/action.types';
+import { Campaign, CampaignData } from '../../interfaces/compaign';
+import { findCampaignByType } from '../../utils/compaign/campaign-finder.util';
 
 @Component({
   selector: 'app-banner',
@@ -12,11 +13,10 @@ import { ActionType } from '../../types/action.types';
   styleUrls: ['./banner.component.css']
 })
 export class BannerComponent implements OnInit, OnChanges {
-  @Input() campaigns: any[] = [];
-  @Input() user_id: string = '';
+  @Input() campaignData?: CampaignData | null;
   
   bannerVisible = true;
-  data: CampaignBanner | undefined;
+  data?: Campaign;
 
   constructor(private userActionTrackService: TrackUserActionService) {}
 
@@ -25,15 +25,15 @@ export class BannerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['campaigns']) {
+    if (changes['campaignData']) {
       this.initializeBanner();
     }
   }
 
   private initializeBanner(): void {
-    this.data = this.campaigns.find(
-      (campaign: any) => campaign.campaign_type === 'BAN'
-    ) as CampaignBanner;
+    if (!this.campaignData) return;
+    
+    this.data = findCampaignByType(this.campaignData.campaigns, 'BAN');
 
     if (this.data) {
       this.trackImpression();
@@ -41,10 +41,12 @@ export class BannerComponent implements OnInit, OnChanges {
   }
 
   private async trackImpression(): Promise<void> {
+    if (!this.campaignData?.user_id || !this.data?.id) return;
+
     try {
       await this.userActionTrackService.trackUserAction(
-        this.user_id,
-        this.data?.id || '',
+        this.campaignData.user_id,
+        this.data.id,
         ActionType.IMPRESSION
       );
     } catch (error) {
@@ -53,7 +55,7 @@ export class BannerComponent implements OnInit, OnChanges {
   }
 
   async onBannerClick(): Promise<void> {
-    if (!this.data?.id) return;
+    if (!this.campaignData?.user_id || !this.data?.id) return;
 
     if (this.data.details.link) {
       window.open(this.data.details.link, '_blank');
@@ -61,7 +63,7 @@ export class BannerComponent implements OnInit, OnChanges {
 
     try {
       await this.userActionTrackService.trackUserAction(
-        this.user_id,
+        this.campaignData.user_id,
         this.data.id,
         ActionType.CLICK
       );

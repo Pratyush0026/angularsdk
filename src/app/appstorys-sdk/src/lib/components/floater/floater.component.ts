@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TrackUserActionService } from '../../utils/track-user-action.service';
-import { UserData, CampaignFloater } from '../../utils/user-data.type';
 import { ActionType } from '../../types/action.types';
+import { Campaign, CampaignData } from '../../interfaces/compaign';
+import { findCampaignByType } from '../../utils/compaign/campaign-finder.util';
 
 @Component({
   selector: 'app-floater',
@@ -12,9 +13,9 @@ import { ActionType } from '../../types/action.types';
   styleUrls: ['./floater.component.css']
 })
 export class FloaterComponent implements OnInit, OnChanges {
-  @Input() campaigns: any[] = [];
-  @Input() user_id: string = '';
-  data: CampaignFloater | undefined;
+  @Input() campaignData?: CampaignData | null;
+  
+  data?: Campaign;
 
   constructor(private userActionTrackService: TrackUserActionService) {}
 
@@ -23,15 +24,15 @@ export class FloaterComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['campaigns']) {
+    if (changes['campaignData']) {
       this.initializeFloater();
     }
   }
 
   private initializeFloater(): void {
-    this.data = this.campaigns.find(
-      (campaign: any) => campaign.campaign_type === 'FLT'
-    ) as CampaignFloater;
+    if (!this.campaignData) return;
+    
+    this.data = findCampaignByType(this.campaignData.campaigns, 'FLT');
 
     if (this.data) {
       this.trackImpression();
@@ -39,10 +40,12 @@ export class FloaterComponent implements OnInit, OnChanges {
   }
 
   private async trackImpression(): Promise<void> {
+    if (!this.campaignData?.user_id || !this.data?.id) return;
+
     try {
       await this.userActionTrackService.trackUserAction(
-        this.user_id,
-        this.data?.id || '',
+        this.campaignData.user_id,
+        this.data.id,
         ActionType.IMPRESSION
       );
     } catch (error) {
@@ -51,7 +54,7 @@ export class FloaterComponent implements OnInit, OnChanges {
   }
 
   async onFloaterClick(): Promise<void> {
-    if (!this.data?.id) return;
+    if (!this.campaignData?.user_id || !this.data?.id) return;
 
     if (this.data.details.link) {
       window.open(this.data.details.link, '_blank');
@@ -59,7 +62,7 @@ export class FloaterComponent implements OnInit, OnChanges {
 
     try {
       await this.userActionTrackService.trackUserAction(
-        this.user_id,
+        this.campaignData.user_id,
         this.data.id,
         ActionType.CLICK
       );

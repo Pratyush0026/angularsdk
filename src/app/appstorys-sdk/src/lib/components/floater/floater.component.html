@@ -1,16 +1,14 @@
-<!-- *ngIf="data && data.details.image"  -->
-<div 
-class="container">
-    <div class="banner">
-      <a 
-        href="https://www.google.com" 
-        target="_blank" 
-      >
-        <img 
-        src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" 
-          alt="Banner image" 
-        />
-      </a>
-    </div>
+<div class="container" *ngIf="data && data.details.image">
+  <div class="banner">
+    <a 
+      [href]="data.details.link || '#'" 
+      target="_blank"
+      (click)="onFloaterClick()"
+    >
+      <img 
+        [src]="data.details.image" 
+        alt="Floater image"
+      />
+    </a>
   </div>
-  
+</div>
