@@ -1,13 +1,16 @@
 <div class="homepage-container">
-
+  @if (isLoading$ | async) {
+    <div class="loading">Loading campaigns...</div>
+  } @else {
     @if (error$ | async; as error) {
       <div class="error-message">{{ error }}</div>
-    } @else {
-      @if (campaignData$ | async; as campaignData) {
-        <app-floater [campaignData]="campaignData"></app-floater>
-        <app-banner [campaignData]="campaignData"></app-banner>
-      }
     }
+    
+    @if (campaignData$ | async; as campaignData) {
+      <app-floater [campaignData]="campaignData"></app-floater>
+      <app-banner [campaignData]="campaignData"></app-banner>
+    }
+  }
 
   <div class="feature-grid">
     @for (feature of features; track feature.title) {

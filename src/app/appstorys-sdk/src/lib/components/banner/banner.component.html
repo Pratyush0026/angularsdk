@@ -1,16 +1,16 @@
-<div class="container" *ngIf="bannerVisible && data">
-  <div class="banner">
+<div class="container" *ngIf="bannerVisible && data?.details?.image">
+  <div class="banner" [style.width]="getWidth()">
     <div class="banner-close" (click)="closeBanner()">✕</div>
     <a 
-      [href]="data.details.link || '#'" 
+      [href]="data?.details?.link || '#'" 
       target="_blank" 
       (click)="onBannerClick()"
     >
       <img 
-        [src]="data.details.image" 
-        [alt]="'Banner image'"
-        [style.width]="data.details.width ? data.details.width + 'px' : '100%'"
-        [style.height]="data.details.height ? data.details.height + 'px' : 'auto'"
+        [src]="data?.details?.image" 
+        [alt]="'Banner Campaign'"
+        [style.width]="getWidth()"
+        [style.height]="getHeight()"
       />
     </a>
   </div>

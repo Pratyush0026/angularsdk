@@ -4,15 +4,14 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FloaterComponent } from '../appstorys-sdk/src/lib/components/floater/floater.component';
 import { BannerComponent } from '../appstorys-sdk/src/lib/components/banner/banner.component';
-import { Feature } from './models/feature.model';
-import { Testimonial } from './models/testimonial.model';
-import { features } from './data/features.data';
-import { testimonials } from './data/testimonials.data';
 import { BehaviorSubject } from 'rxjs';
 import { AppStorysService } from '../appstorys-sdk/src/lib/utils/app-storys.service';
-import { CampaignService } from '../appstorys-sdk/src/lib/utils/compaign/campaign.service';
-import { CampaignData } from '../appstorys-sdk/src/lib/interfaces/compaign';
+import { CampaignData } from '../appstorys-sdk/src/public-api';
 
+import { features } from './data/features.data';
+import { testimonials } from './data/testimonials.data';
+import { Feature } from './models/feature.model';
+import { Testimonial } from './models/testimonial.model';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -22,16 +21,16 @@ import { CampaignData } from '../appstorys-sdk/src/lib/interfaces/compaign';
     FloaterComponent,
     BannerComponent
   ],
-  providers: [CampaignService, AppStorysService],
+  providers: [AppStorysService],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  private readonly appId = '37ca2d75-8484-4cc1-97ed-d9475ce5a631';
-  private readonly accountId = '4e109ac3-be92-4a5c-bbe6-42e6c712ec9a';
-  private readonly user_id = 'akdnnsa';
+  private readonly appId = '9e1b21a2-350a-4592-918c-2a19a73f249a';
+  private readonly accountId = '4350bf8e-0c9a-46bd-b953-abb65ab21d11';
+  private readonly userId = 'akdnnqsdqsdqsdsa';
   private readonly screenName = 'Home Screen';
-  
+
   readonly features: Feature[] = features;
   readonly testimonials: Testimonial[] = testimonials;
 
@@ -41,7 +40,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private campaignService: CampaignService
+    private appStorysService: AppStorysService
   ) {}
 
   private isBrowser(): boolean {
@@ -53,22 +52,41 @@ export class HomeComponent implements OnInit {
       return;
     }
 
+    this.initializeCampaigns();
+  }
+
+  private async initializeCampaigns(): Promise<void> {
     this.isLoading$.next(true);
-    this.campaignService.initializeCampaigns(
-      this.accountId,
-      this.appId,
-      this.user_id,
-      this.screenName
-    ).finally(() => {
+    
+    try {
+      await this.appStorysService.verifyAccount(this.accountId, this.appId);
+      
+      const accessToken = await this.appStorysService.getAccessToken();
+      if (!accessToken) {
+        throw new Error('Access token not found');
+      }
+
+      const screenData = await this.appStorysService.trackScreen(this.appId, this.screenName);
+      if (!screenData?.campaigns) {
+        throw new Error('No campaigns available');
+      }
+
+      const userData = await this.appStorysService.verifyUser(this.userId, screenData);
+      if (!userData) {
+        throw new Error('Failed to get user campaign data');
+      }
+
+      this.campaignData$.next({
+        campaigns: userData.campaigns,
+        access_token: accessToken,
+        user_id: this.userId
+      });
+
+    } catch (error) {
+      console.error('Error initializing campaigns:', error);
+      this.error$.next('Failed to initialize campaigns');
+    } finally {
       this.isLoading$.next(false);
-    });
-
-    this.campaignService.error$.subscribe(error => {
-      this.error$.next(error);
-    });
-
-    this.campaignService.campaignData$.subscribe(data => {
-      this.campaignData$.next(data);
-    });
+    }
   }
 }

@@ -42,11 +42,11 @@ export class VerifyUserService {
       const body = {
         user_id: userId,
         app_id: appId,
-        campaign_list: campaigns.campaigns,
+        campaign_list: campaigns.campaigns, // Changed back to campaign_list as required by API
         ...(attributes && { attributes })
       };
 
-      const response = await this.http.post<ApiResponse<UserData>>(
+      const response = await this.http.post<any>(
         this.apiUrl,
         body,
         { headers }
@@ -58,16 +58,17 @@ export class VerifyUserService {
         })
       ).toPromise();
 
-      if (response?.success && response.data) {
-        return response.data;
+      if (response?.campaigns) {
+        return {
+          user_id: userId,
+          campaigns: response.campaigns
+        };
       }
 
-      return { user_id: userId, campaigns };
+      throw new Error('Invalid response format');
     } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error in verifyUser:', error.message);
-      }
-      return { user_id: userId, campaigns };
+      console.error('Error in verifyUser:', error);
+      throw error;
     }
   }
 }

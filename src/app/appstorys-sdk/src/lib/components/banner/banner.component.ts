@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TrackUserActionService } from '../../utils/track-user-action.service';
+import { CAMPAIGN_TYPES, CampaignData, MediaCampaign } from '../../interfaces/compaign';
 import { ActionType } from '../../types/action.types';
-import { Campaign, CampaignData } from '../../interfaces/compaign';
-import { findCampaignByType } from '../../utils/compaign/campaign-finder.util';
 
 @Component({
   selector: 'app-banner',
@@ -16,7 +15,7 @@ export class BannerComponent implements OnInit, OnChanges {
   @Input() campaignData?: CampaignData | null;
   
   bannerVisible = true;
-  data?: Campaign;
+  data?: MediaCampaign;
 
   constructor(private userActionTrackService: TrackUserActionService) {}
 
@@ -31,13 +30,23 @@ export class BannerComponent implements OnInit, OnChanges {
   }
 
   private initializeBanner(): void {
-    if (!this.campaignData) return;
-    
-    this.data = findCampaignByType(this.campaignData.campaigns, 'BAN');
+    if (!this.campaignData?.campaigns) return;
 
-    if (this.data) {
+    const banners = this.campaignData.campaigns
+      .filter(campaign => campaign.campaign_type === CAMPAIGN_TYPES.BANNER) as MediaCampaign[];
+
+    if (banners.length > 0) {
+      this.data = banners[0];
       this.trackImpression();
     }
+  }
+
+  getWidth(): string {
+    return this.data?.details?.width ? `${this.data.details.width}px` : '100%';
+  }
+
+  getHeight(): string {
+    return this.data?.details?.height ? `${this.data.details.height}px` : 'auto';
   }
 
   private async trackImpression(): Promise<void> {
@@ -56,10 +65,6 @@ export class BannerComponent implements OnInit, OnChanges {
 
   async onBannerClick(): Promise<void> {
     if (!this.campaignData?.user_id || !this.data?.id) return;
-
-    if (this.data.details.link) {
-      window.open(this.data.details.link, '_blank');
-    }
 
     try {
       await this.userActionTrackService.trackUserAction(

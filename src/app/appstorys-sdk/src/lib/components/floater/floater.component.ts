@@ -2,8 +2,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { TrackUserActionService } from '../../utils/track-user-action.service';
 import { ActionType } from '../../types/action.types';
-import { Campaign, CampaignData } from '../../interfaces/compaign';
-import { findCampaignByType } from '../../utils/compaign/campaign-finder.util';
+import { CampaignData, MediaCampaign, CAMPAIGN_TYPES } from '../../interfaces/compaign';
 
 @Component({
   selector: 'app-floater',
@@ -15,7 +14,7 @@ import { findCampaignByType } from '../../utils/compaign/campaign-finder.util';
 export class FloaterComponent implements OnInit, OnChanges {
   @Input() campaignData?: CampaignData | null;
   
-  data?: Campaign;
+  data?: MediaCampaign;
 
   constructor(private userActionTrackService: TrackUserActionService) {}
 
@@ -30,13 +29,22 @@ export class FloaterComponent implements OnInit, OnChanges {
   }
 
   private initializeFloater(): void {
-    if (!this.campaignData) return;
-    
-    this.data = findCampaignByType(this.campaignData.campaigns, 'FLT');
+    if (!this.campaignData?.campaigns) return;
 
-    if (this.data) {
+    const floaters = this.campaignData.campaigns
+      .filter(campaign => campaign.campaign_type === CAMPAIGN_TYPES.FLOATER) as MediaCampaign[];
+    
+    if (floaters.length > 0) {
+      this.data = floaters[0];
       this.trackImpression();
     }
+  }
+
+  getPosition(): { [key: string]: string } {
+    return {
+      right: '20px',
+      left: 'auto'
+    };
   }
 
   private async trackImpression(): Promise<void> {
@@ -55,10 +63,6 @@ export class FloaterComponent implements OnInit, OnChanges {
 
   async onFloaterClick(): Promise<void> {
     if (!this.campaignData?.user_id || !this.data?.id) return;
-
-    if (this.data.details.link) {
-      window.open(this.data.details.link, '_blank');
-    }
 
     try {
       await this.userActionTrackService.trackUserAction(

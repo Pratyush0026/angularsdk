@@ -1,13 +1,13 @@
-<div class="container" *ngIf="data && data.details.image">
+<div class="container" *ngIf="data?.details?.image" [ngStyle]="getPosition()">
   <div class="banner">
     <a 
-      [href]="data.details.link || '#'" 
+      [href]="data?.details?.link || '#'" 
       target="_blank"
       (click)="onFloaterClick()"
     >
       <img 
-        [src]="data.details.image" 
-        alt="Floater image"
+        [src]="data?.details?.image" 
+        [alt]="'Floater Campaign'"
       />
     </a>
   </div>

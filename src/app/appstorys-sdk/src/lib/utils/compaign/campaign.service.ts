@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
-import { CampaignData } from '../../interfaces/compaign';
+import { BehaviorSubject, distinctUntilChanged, map } from 'rxjs';
 import { AppStorysService } from '../app-storys.service';
-
+import { CampaignData } from '../../interfaces/compaign';
 
 interface CampaignState {
   loading: boolean;
   error: string | null;
-  data: CampaignData | null;
+  data: CampaignData;
   initialized: boolean;
 }
 
 const initialState: CampaignState = {
   loading: false,
   error: null,
-  data: null,
+  data: {
+    campaigns: [],
+    access_token: '',
+    user_id: ''
+  },
   initialized: false
 };
 
@@ -57,28 +60,35 @@ export class CampaignService {
     });
 
     try {
+      // First verify account and get tokens
       await this.appStorysService.verifyAccount(accountId, appId);
-      const campaigns = await this.appStorysService.trackScreen(appId, screenName);
       
-      if (!campaigns?.campaigns?.length) {
-        throw new Error('No campaigns available');
-      }
-
+      // Get access token
       const accessToken = await this.appStorysService.getAccessToken();
       if (!accessToken) {
         throw new Error('Access token not found');
       }
 
+      // Get screen campaigns
+      const screenData = await this.appStorysService.trackScreen(appId, screenName);
+      
+      if (!screenData?.campaigns) {
+        throw new Error('No campaigns available');
+      }
+
+      // Verify user and get campaign details
+      const userData = await this.appStorysService.verifyUser(userId, screenData);
+      
+      if (!userData) {
+        throw new Error('Failed to get user campaign data');
+      }
+
+      // Create campaign data with user-specific campaign details
       const campaignData: CampaignData = {
-        campaigns: campaigns.campaigns,
+        campaigns: userData.campaigns,
         access_token: accessToken,
         user_id: userId
       };
-
-      const verifiedUser = await this.appStorysService.verifyUser(userId, campaigns);
-      if (verifiedUser?.campaigns) {
-        campaignData.campaigns = verifiedUser.campaigns;
-      }
 
       this.state.next({
         loading: false,
@@ -89,18 +99,12 @@ export class CampaignService {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       this.state.next({
+        ...this.state.value,
         loading: false,
         error: errorMessage,
-        data: null,
         initialized: true
       });
       console.error('Error initializing campaigns:', error);
     }
-  }
-
-  getCampaigns(): Observable<CampaignData> {
-    return this.campaignData$.pipe(
-      map(data => data || { campaigns: [], access_token: '', user_id: '' })
-    );
   }
 }
