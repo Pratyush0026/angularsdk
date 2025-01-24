@@ -1,0 +1,67 @@
+<div *ngIf="pipData?.details && pipVisible" class="pip-container" [style.top.px]="position.y" [style.left.px]="position.x">
+    <div *ngIf="!fullScreenPipVisible" 
+         #pipRef
+         class="pip-window"
+         (mousedown)="handleStart($event)"
+         (touchstart)="handleStart($event)"
+         (mousemove)="handleMove($event)"
+         (touchmove)="handleMove($event)"
+         (mouseup)="handleEnd($event)"
+         (touchend)="handleEnd($event)">
+      <img
+        [src]="'assets/black_cross.png'"
+        alt="close"
+        class="close-button"
+        (click)="handleCloseClick($event)"
+      />
+      <video
+        [src]="pipData?.details?.small_video"
+        autoplay
+        muted
+        loop
+        playsinline
+        class="pip-video"
+      ></video>
+    </div>
+  
+    <div *ngIf="fullScreenPipVisible" class="fullscreen-container" (click)="$event.stopPropagation()">
+      <div class="fullscreen-content">
+        <div class="video-container">
+          <div class="controls-container">
+            <button (click)="togglePause()" class="control-button">
+              <img
+                [src]="isPaused ? 'assets/play_image.png' : 'assets/pause_image.png'"
+                [alt]="isPaused ? 'Play' : 'Pause'"
+                class="control-icon"
+              />
+            </button>
+          </div>
+          <div class="main-video-container">
+            <video
+              #videoRef
+              [src]="pipData?.details?.large_video"
+              class="main-video"
+              autoplay
+              loop
+              playsinline
+            ></video>
+            <div class="cta-container">
+              <a
+                [href]="pipData?.details?.link"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="cta-button"
+                (click)="trackClick()"
+              >
+                Continue to Site
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <button (click)="closeFullScreen()" class="close-fullscreen-button">
+          <img src="assets/close_image.png" alt="Close" class="close-icon" />
+        </button>
+      </div>
+    </div>
+  </div>

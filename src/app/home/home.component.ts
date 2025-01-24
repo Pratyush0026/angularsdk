@@ -12,6 +12,11 @@ import { features } from './data/features.data';
 import { testimonials } from './data/testimonials.data';
 import { Feature } from './models/feature.model';
 import { Testimonial } from './models/testimonial.model';
+import { WidgetsComponent } from "../appstorys-sdk/src/lib/components/widgets/widgets.component";
+import { StoriesComponent } from "../appstorys-sdk/src/lib/components/stories/stories.component";
+import { Observable } from 'rxjs';
+import { PipComponent } from "../appstorys-sdk/src/lib/components/pip/pip.component";
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -19,8 +24,11 @@ import { Testimonial } from './models/testimonial.model';
     CommonModule,
     HttpClientModule,
     FloaterComponent,
-    BannerComponent
-  ],
+    BannerComponent,
+    WidgetsComponent,
+    StoriesComponent,
+    PipComponent
+],
   providers: [AppStorysService],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']

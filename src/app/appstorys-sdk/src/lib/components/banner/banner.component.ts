@@ -25,7 +25,7 @@ export class BannerComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['campaignData']) {
-      this.initializeBanner();
+      // this.initializeBanner();
     }
   }
 

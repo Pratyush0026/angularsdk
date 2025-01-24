@@ -24,7 +24,7 @@ export class FloaterComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['campaignData']) {
-      this.initializeFloater();
+      // this.initializeFloater();
     }
   }
 

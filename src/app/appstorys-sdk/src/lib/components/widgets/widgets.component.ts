@@ -1,13 +1,22 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TrackUserActionService } from '../../utils/track-user-action.service';
+import { CAMPAIGN_TYPES, CampaignData, MediaCampaign } from '../../interfaces/compaign';
+import { ActionType } from '../../types/action.types';
 
 @Component({
   selector: 'app-widgets',
   templateUrl: './widgets.component.html',
   styleUrls: ['./widgets.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule],
+  standalone: true,
 })
-export class WidgetsComponent {
+export class WidgetsComponent implements OnInit, OnChanges {
+
+  @Input() campaignData?: CampaignData | null;
+
+  data?: MediaCampaign;
+
   items: string[] = [
     'https://t4.ftcdn.net/jpg/05/69/49/63/240_F_569496344_tEf2nCw2bTBV0daUd2sWvRxSzga2diiX.jpg',
     'https://t4.ftcdn.net/jpg/02/67/56/03/240_F_267560350_CQ4RBi4gFXll7ppl7srUnWqXUq14KoGM.jpg',
@@ -20,8 +29,69 @@ export class WidgetsComponent {
   private touchStartX: number = 0;
   private touchEndX: number = 0;
 
-  constructor() {
+  constructor(private userActionTrackService: TrackUserActionService) {
     this.updateViewMode();
+  }
+
+  ngOnInit(): void {
+    this.initializeWidgets();
+    
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['campaignData']) {
+      // this.initializeWidgets();
+      console.log('widgets data:',this.data);
+    }
+  }
+
+  private initializeWidgets(): void {
+    if (!this.campaignData?.campaigns) return;
+
+    const widgets = this.campaignData.campaigns
+      .filter(campaign => campaign.campaign_type === CAMPAIGN_TYPES.WIDGETS) as MediaCampaign[];
+
+    if (widgets.length > 0) {
+      this.data = widgets[0];
+      this.trackImpression();
+      console.log('widgets data:',this.data);    
+    }
+  }
+
+  // getWidth(): string {
+  //   return this.data?.details?.width ? `${this.data.details.width}px` : '100%';
+  // }
+
+  // getHeight(): string {
+  //   return this.data?.details?.height ? `${this.data.details.height}px` : 'auto';
+  // }
+
+  private async trackImpression(): Promise<void> {
+    if (!this.campaignData?.user_id || !this.data?.id) return;
+
+    try {
+      await this.userActionTrackService.trackUserAction(
+        this.campaignData.user_id,
+        this.data.id,
+        ActionType.IMPRESSION
+      );
+    } catch (error) {
+      console.error('Error tracking impression:', error);
+    }
+  }
+
+  async onWidgetsClick(): Promise<void> {
+    if (!this.campaignData?.user_id || !this.data?.id) return;
+
+    try {
+      await this.userActionTrackService.trackUserAction(
+        this.campaignData.user_id,
+        this.data.id,
+        ActionType.CLICK
+      );
+    } catch (error) {
+      console.error('Error tracking click:', error);
+    }
   }
 
   @HostListener('window:resize', [])

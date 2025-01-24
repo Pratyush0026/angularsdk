@@ -1,0 +1,130 @@
+/* stories.component.scss */
+.stories-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    padding: 0 5px;
+  }
+  
+  .stories-scroll {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 15px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .stories-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  
+  .story-item {
+    flex-shrink: 0;
+    height: 135px;
+    width: 100px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .story-content {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .story-thumbnail {
+    height: 82px;
+    width: 82px;
+    border-radius: 50%;
+    padding: 5px;
+    border-width: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .story-thumbnail img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+  
+  .story-name {
+    margin-top: 2px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 1024px) {
+    .stories-scroll {
+      gap: 10px;
+    }
+  
+    .story-item {
+      width: 90px;
+    }
+  
+    .story-thumbnail {
+      height: 70px;
+      width: 70px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .stories-scroll {
+      gap: 6px;
+    }
+  
+    .story-item {
+      width: 75px;
+    }
+  
+    .story-thumbnail {
+      height: 65px;
+      width: 65px;
+    }
+  }
+  
+  @media (max-width: 442px) {
+    .stories-scroll {
+      gap: 8px;
+    }
+  
+    .story-item {
+      width: 60px;
+    }
+  
+    .story-thumbnail {
+      height: 60px;
+      width: 60px;
+    }
+  
+    .story-name {
+      font-size: 10px;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .story-item {
+      width: 50px;
+    }
+  
+    .story-thumbnail {
+      height: 50px;
+      width: 50px;
+    }
+  }
+  
+  @media (max-width: 549px) {
+    .story-thumbnail {
+      padding: 2px;
+    }
+  }
