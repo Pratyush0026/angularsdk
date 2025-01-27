@@ -1,4 +1,4 @@
-.container {
+/* .container {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -13,7 +13,26 @@
   .banner {
     height: 60px;
     width: 60px;
-    /* position: relative; */
+   
+  } */
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-end;
+    align-items: flex-end;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    pointer-events: none; /* Add this */
+  }
+  
+  .banner {
+    height: 60px;
+    width: 60px;
+    pointer-events: auto; /* Add this */
   }
   
   .banner img {
