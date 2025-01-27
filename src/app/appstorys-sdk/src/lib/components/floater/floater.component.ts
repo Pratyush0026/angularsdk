@@ -62,6 +62,7 @@ export class FloaterComponent implements OnInit, OnChanges {
   }
 
   async onFloaterClick(): Promise<void> {
+    
     if (!this.campaignData?.user_id || !this.data?.id) return;
 
     try {

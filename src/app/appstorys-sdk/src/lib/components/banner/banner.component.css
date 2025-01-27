@@ -1,20 +1,48 @@
+/* .container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 0 10%;
+}
+
+.banner {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+ 
+  margin-bottom: 20px;
+} */
+
 .container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
   justify-content: flex-end;
   align-items: center;
   position: fixed;
-  bottom: 0.75rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 0 10%;
+  pointer-events: none; /* Add this */
 }
 
 .banner {
-  height: 100px;
-  width: 80%;
-  margin-bottom: 10px;
+  height: 100%;
+  width: 100%;
   position: relative;
-  
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  pointer-events: auto; /* Add this */
 }
 
 .banner img {
@@ -22,56 +50,35 @@
   width: 100%;
   object-fit: cover;
   border-radius: 8px;
-
+  display: block; /* This removes any default spacing */
 }
 
 .banner-close {
   position: absolute;
-  /* height: 20px;
-    width: 20px; */
   background-color: black;
   color: white;
   text-align: center;
-  /* text-align-last: center; */
   border-radius: 50%;
-  top: 0;
-  right: 0;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  top: -5px;
+  right: -5px;
   cursor: pointer;
+  font-size: 14px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
 }
 
-/* Responsive styles */
 @media (max-width: 904px) {
-  .banner {
-    width: 85%;
+  .container {
+    padding: 0 7.5%; /* Adjusted padding for medium screens */
   }
 }
 
 @media (max-width: 768px) {
   .banner {
-    width: 95%;
     height: 80px;
   }
+  .container {
+    padding: 0 2.5%; /* Adjusted padding for small screens */
+  }
 }
-
-.banner-close {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: black;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  text-align: center;
-  line-height: 20px;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.banner-close:hover {
-  background-color: red;
-}
-

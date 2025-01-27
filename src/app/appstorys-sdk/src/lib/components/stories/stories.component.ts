@@ -55,7 +55,6 @@ export class StoriesComponent implements OnInit, OnChanges {
     if (stories) {
       this.data = stories;
       this.userId = this.campaignData?.user_id;
-      // this.trackImpression();
     }
   }
 
@@ -63,8 +62,6 @@ export class StoriesComponent implements OnInit, OnChanges {
     this.slideScreenVisible = true;
     this.slidesData = this.data!;
     this.currentGroupIndex = storyGroupIndex;
-    // if (this.data) {
-    //   this.userActionTrackService.trackAction(this.user_id, this.data.id, 'CLK');
-    // }
+   
   }
 }
