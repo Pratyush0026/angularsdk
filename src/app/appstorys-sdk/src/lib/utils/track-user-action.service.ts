@@ -20,7 +20,8 @@ export class TrackUserActionService {
     userId: string,
     campaignId: string,
     eventType: ActionType,
-    storySlide?: string
+    storySlide?: string,
+    widget_image?: string,
   ): Promise<void> {
     try {
       const accessToken = this.storageService.getItem('access_token');
@@ -42,6 +43,10 @@ export class TrackUserActionService {
       if (storySlide) {
         body.story_slide = storySlide;
       }
+
+      if (widget_image) {
+        body.widget_image = widget_image;
+    }
 
       await this.http.post(this.apiUrl, body, { headers }).pipe(
         catchError((error) => {

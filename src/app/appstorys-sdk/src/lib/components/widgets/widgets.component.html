@@ -11,17 +11,32 @@
   >
     <!-- Duplicate last item for seamless looping -->
     <div class="carousel-item" *ngIf="items.length > 0">
-      <img [src]="items[items.length - 1]" alt="Carousel item" />
+      <img 
+        #carouselImage
+        [src]="items[items.length - 1]" 
+        alt="Carousel item" 
+        (click)="trackClicks()"
+      />
     </div>
 
     <!-- Original items -->
     <div class="carousel-item" *ngFor="let item of items">
-      <img [src]="item" alt="Carousel item" />
+      <img 
+        #carouselImage
+        [src]="item" 
+        alt="Carousel item" 
+        (click)="trackClicks()"
+      />
     </div>
 
     <!-- Duplicate first item for seamless looping -->
     <div class="carousel-item" *ngIf="items.length > 0">
-      <img [src]="items[0]" alt="Carousel item" />
+      <img 
+        #carouselImage
+        [src]="items[0]" 
+        alt="Carousel item" 
+        (click)="trackClicks()"
+      />
     </div>
   </div>
 

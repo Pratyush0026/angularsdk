@@ -11,6 +11,14 @@ export interface MediaCampaignDetails extends BaseCampaignDetails {
   height?: number | null;
   type?: 'full' | 'half';
   position?: 'left' | 'right' | 'center';
+  widget_images?: WidgetImage[];
+}
+
+interface WidgetImage {
+  id: string;
+  image: string;
+  link: string;
+  order: number;
 }
 
 // Story campaign details

@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, HostListener, Input, OnInit, OnChanges, SimpleChanges, ViewChildren, AfterViewInit, QueryList, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TrackUserActionService } from '../../utils/track-user-action.service';
 import { CAMPAIGN_TYPES, CampaignData, MediaCampaign } from '../../interfaces/compaign';
@@ -11,37 +11,68 @@ import { ActionType } from '../../types/action.types';
   imports: [CommonModule],
   standalone: true,
 })
-export class WidgetsComponent implements OnInit, OnChanges {
-
+export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() campaignData?: CampaignData | null;
+  @ViewChildren('carouselImage') carouselImages!: QueryList<ElementRef>;
 
   data?: MediaCampaign;
-
-  items: string[] = [
-    'https://t4.ftcdn.net/jpg/05/69/49/63/240_F_569496344_tEf2nCw2bTBV0daUd2sWvRxSzga2diiX.jpg',
-    'https://t4.ftcdn.net/jpg/02/67/56/03/240_F_267560350_CQ4RBi4gFXll7ppl7srUnWqXUq14KoGM.jpg',
-    'https://t3.ftcdn.net/jpg/07/55/28/76/240_F_755287628_PGerIoOomg01OyR8mesg91vNPB08wtnW.jpg',
-  ];
-  currentIndex: number = 1; // Start at the first real slide (index 1)
+  items: string[] = [];
+  currentIndex: number = 1;
   transition: string = 'transform 0.5s ease-in-out';
   isMobileView: boolean = false;
-
   private touchStartX: number = 0;
   private touchEndX: number = 0;
+  private observer: IntersectionObserver | null = null;
+  private trackedImageIds: Set<string> = new Set();
 
-  constructor(private userActionTrackService: TrackUserActionService) {
+  constructor(
+    private userActionTrackService: TrackUserActionService,
+    private elementRef: ElementRef
+  ) {
     this.updateViewMode();
   }
 
   ngOnInit(): void {
     this.initializeWidgets();
-    
+  }
+
+  ngAfterViewInit(): void {
+    this.setupIntersectionObserver();
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+  }
+
+  private setupIntersectionObserver(): void {
+    const options = {
+      root: null,
+      threshold: 0.5
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const imageId = this.data?.details.widget_images![this.getCurrentSlideIndex()].id;
+          if (imageId && !this.trackedImageIds.has(imageId)) {
+            this.trackImpression();
+            this.trackedImageIds.add(imageId); // Add the image ID to tracked set
+          }
+        }
+      });
+    }, options);
+
+    // Observe all carousel images
+    this.carouselImages.forEach(imageRef => {
+      this.observer?.observe(imageRef.nativeElement);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['campaignData']) {
-      // this.initializeWidgets();
-      console.log('widgets data:',this.data);
+      this.initializeWidgets();
     }
   }
 
@@ -53,46 +84,60 @@ export class WidgetsComponent implements OnInit, OnChanges {
 
     if (widgets.length > 0) {
       this.data = widgets[0];
-      this.trackImpression();
-      console.log('widgets data:',this.data);    
+      this.items = this.data.details.widget_images!.map(widget => widget.image);
     }
   }
 
-  // getWidth(): string {
-  //   return this.data?.details?.width ? `${this.data.details.width}px` : '100%';
-  // }
-
-  // getHeight(): string {
-  //   return this.data?.details?.height ? `${this.data.details.height}px` : 'auto';
-  // }
-
   private async trackImpression(): Promise<void> {
     if (!this.campaignData?.user_id || !this.data?.id) return;
+
+    const imageId = this.data.details.widget_images![this.getCurrentSlideIndex()].id;
+    if (this.trackedImageIds.has(imageId)) return; // Skip if already tracked
 
     try {
       await this.userActionTrackService.trackUserAction(
         this.campaignData.user_id,
         this.data.id,
-        ActionType.IMPRESSION
+        ActionType.IMPRESSION,
+        undefined,
+        imageId
       );
     } catch (error) {
       console.error('Error tracking impression:', error);
     }
   }
 
-  async onWidgetsClick(): Promise<void> {
+  async trackClicks(): Promise<void> {
     if (!this.campaignData?.user_id || !this.data?.id) return;
 
     try {
       await this.userActionTrackService.trackUserAction(
         this.campaignData.user_id,
         this.data.id,
-        ActionType.CLICK
+        ActionType.CLICK,
+        undefined,
+        this.data.details.widget_images![this.getCurrentSlideIndex()].id,
       );
+
+      window.open(this.data.details.widget_images![this.getCurrentSlideIndex()].link, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error('Error tracking click:', error);
     }
   }
+
+  // async onWidgetsClick(): Promise<void> {
+  //   if (!this.campaignData?.user_id || !this.data?.id) return;
+
+  //   try {
+  //     await this.userActionTrackService.trackUserAction(
+  //       this.campaignData.user_id,
+  //       this.data.id,
+  //       ActionType.CLICK
+  //     );
+  //   } catch (error) {
+  //     console.error('Error tracking click:', error);
+  //   }
+  // }
 
   @HostListener('window:resize', [])
   updateViewMode(): void {
