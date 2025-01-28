@@ -1,5 +1,7 @@
 <div class="container" *ngIf="data?.details?.image" [ngStyle]="getPosition()">
-  <div class="banner">
+  <div class="banner"
+  [style.width]="getWidth()"
+  [style.height]="getHeight()">
     <a 
       [href]="data?.details?.link || '#'" 
       target="_blank"

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { TrackUserActionService } from '../../utils/track-user-action.service';
 import { CAMPAIGN_TYPES, CampaignData, MediaCampaign } from '../../interfaces/compaign';
 import { ActionType } from '../../types/action.types';
@@ -19,14 +19,12 @@ interface Campaign {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './pip.component.html',
-  styleUrls: ['./pip.component.css']
+  styleUrls: ['./pip.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PipComponent implements OnInit, OnDestroy {
-  // @Input() accessToken!: string;
-  // @Input() campaigns!: Campaign[];
   @Input() campaignData?: CampaignData | null;
   campaigns: any[] = [];
-  // @Input() userId!: string;
   @ViewChild('videoRef') videoRef!: ElementRef<HTMLVideoElement>;
   @ViewChild('pipRef') pipRef!: ElementRef;
 
@@ -46,35 +44,44 @@ export class PipComponent implements OnInit, OnDestroy {
   readonly margin = 20;
 
   private resizeListener: () => void;
+  private moveListener: (e: MouseEvent | TouchEvent) => void;
+  private endListener: (e: MouseEvent | TouchEvent) => void;
 
-  constructor(private userActionTrackService: TrackUserActionService) {
+  constructor(
+    private userActionTrackService: TrackUserActionService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.resizeListener = this.handleResize.bind(this);
+    this.moveListener = this.handleMove.bind(this);
+    this.endListener = this.handleEnd.bind(this);
   }
 
   ngOnInit(): void {
     window.addEventListener('resize', this.resizeListener);
+    window.addEventListener('mousemove', this.moveListener);
+    window.addEventListener('mouseup', this.endListener);
+    window.addEventListener('touchmove', this.moveListener, { passive: false });
+    window.addEventListener('touchend', this.endListener);
     this.initializePipData();
   }
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.resizeListener);
+    window.removeEventListener('mousemove', this.moveListener);
+    window.removeEventListener('mouseup', this.endListener);
+    window.removeEventListener('touchmove', this.moveListener);
+    window.removeEventListener('touchend', this.endListener);
     this.enableSelection();
   }
 
   private async initializePipData(): Promise<void> {
-
     this.campaigns = this.campaignData!.campaigns;
     const pip = this.campaigns.find(val => val.campaign_type === 'PIP');
     if (pip) {
       this.pipData = pip;
-
       this.trackImpression();
-      // try {
-      //   await this.userActionTrackService.trackAction(this.userId, data.id, 'IMP');
-      // } catch (error) {
-      //   console.error('Error in tracking impression:', error);
-      // }
     }
+    this.cdr.detectChanges();
   }
 
   private async trackImpression(): Promise<void> {
@@ -119,16 +126,20 @@ export class PipComponent implements OnInit, OnDestroy {
   handleMove(e: MouseEvent | TouchEvent): void {
     if (!this.dragging) return;
 
-    const clientX = e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
-    const clientY = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
+    requestAnimationFrame(() => {
+      const clientX = e instanceof TouchEvent ? e.touches[0].clientX : e.clientX;
+      const clientY = e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
 
-    const newX = clientX - this.rel.x;
-    const newY = clientY - this.rel.y;
+      const newX = clientX - this.rel.x;
+      const newY = clientY - this.rel.y;
 
-    this.position = {
-      x: Math.max(this.margin, Math.min(newX, window.innerWidth - 150 - this.margin)),
-      y: Math.max(this.margin, Math.min(newY, window.innerHeight - 200 - this.margin))
-    };
+      this.position = {
+        x: Math.max(this.margin, Math.min(newX, window.innerWidth - 150 - this.margin)),
+        y: Math.max(this.margin, Math.min(newY, window.innerHeight - 200 - this.margin))
+      };
+      
+      this.cdr.detectChanges();
+    });
   }
 
   handleEnd(e: MouseEvent | TouchEvent): void {
@@ -148,6 +159,7 @@ export class PipComponent implements OnInit, OnDestroy {
     }
     this.dragging = false;
     this.enableSelection();
+    this.cdr.detectChanges();
   }
 
   private handleResize(): void {
@@ -155,6 +167,7 @@ export class PipComponent implements OnInit, OnDestroy {
       x: Math.min(this.position.x, window.innerWidth - 150 - this.margin),
       y: Math.min(this.position.y, window.innerHeight - 200 - this.margin)
     };
+    this.cdr.detectChanges();
   }
 
   handleVideoClick(): void {
@@ -163,12 +176,14 @@ export class PipComponent implements OnInit, OnDestroy {
       this.trackImpression();
     }
     document.body.style.overflow = 'hidden';
+    this.cdr.detectChanges();
   }
 
   handleCloseClick(e: Event): void {
     e.stopPropagation();
     this.pipVisible = false;
     document.body.style.overflow = 'auto';
+    this.cdr.detectChanges();
   }
 
   togglePause(): void {
@@ -180,18 +195,19 @@ export class PipComponent implements OnInit, OnDestroy {
         this.videoRef.nativeElement.play();
       }
     }
+    this.cdr.detectChanges();
   }
 
   closeFullScreen(): void {
     this.fullScreenPipVisible = false;
     document.body.style.overflow = 'auto';
+    this.cdr.detectChanges();
   }
 
   private disableSelection(): void {
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
     document.body.style.userSelect = 'none';
-    // document.body.style.msUserSelect = 'none';
     document.body.style.overflow = 'hidden';
   }
 
@@ -199,7 +215,6 @@ export class PipComponent implements OnInit, OnDestroy {
     document.body.style.userSelect = 'auto';
     document.body.style.webkitUserSelect = 'auto';
     document.body.style.userSelect = 'auto';
-    // document.body.style.msUserSelect = 'auto';
     document.body.style.overflow = this.fullScreenPipVisible ? 'hidden' : 'auto';
   }
 

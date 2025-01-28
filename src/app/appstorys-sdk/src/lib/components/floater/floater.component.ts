@@ -47,6 +47,14 @@ export class FloaterComponent implements OnInit, OnChanges {
     };
   }
 
+  getWidth(): string {
+    return this.data?.details?.width ? `${this.data.details.width}px` : '60px';
+  }
+
+  getHeight(): string {
+    return this.data?.details?.height ? `${this.data.details.height}px` : '60px';
+  }
+
   private async trackImpression(): Promise<void> {
     if (!this.campaignData?.user_id || !this.data?.id) return;
 

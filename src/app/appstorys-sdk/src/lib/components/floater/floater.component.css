@@ -27,6 +27,7 @@
     bottom: 20px;
     right: 20px;
     pointer-events: none; /* Add this */
+    z-index: 20;
   }
   
   .banner {
@@ -43,7 +44,7 @@
   }
   
   /* Responsive styles */
-  @media (max-width: 904px) {
+  /* @media (max-width: 904px) {
     .banner {
       height: 60px;
       width: 60px;
@@ -55,5 +56,5 @@
       width: 60px;
       height: 60px;
     }
-  }
+  } */
   

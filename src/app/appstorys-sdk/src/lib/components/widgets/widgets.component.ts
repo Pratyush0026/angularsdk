@@ -37,7 +37,11 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.setupIntersectionObserver();
+    if(this.data?.details.type === 'half'){
+      this.trackImpressionForHalfWidget();
+    } else{
+      this.setupIntersectionObserver();
+    }
   }
 
   ngOnDestroy(): void {
@@ -77,6 +81,7 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private initializeWidgets(): void {
+    console.log('Widgets campaign data:', this.campaignData);
     if (!this.campaignData?.campaigns) return;
 
     const widgets = this.campaignData.campaigns
@@ -85,7 +90,17 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
     if (widgets.length > 0) {
       this.data = widgets[0];
       this.items = this.data.details.widget_images!.map(widget => widget.image);
+
+      console.log('Widgets data:', this.data);
     }
+  }
+
+  getWidth(): string {
+    return this.data?.details?.width ? `${this.data.details.width}px` : '100%';
+  }
+
+  getHeight(): string {
+    return this.data?.details?.height ? `${this.data.details.height}px` : '200px';
   }
 
   private async trackImpression(): Promise<void> {
@@ -107,19 +122,46 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  async trackClicks(): Promise<void> {
+  private async trackImpressionForHalfWidget(): Promise<void> {
     if (!this.campaignData?.user_id || !this.data?.id) return;
 
     try {
       await this.userActionTrackService.trackUserAction(
         this.campaignData.user_id,
         this.data.id,
+        ActionType.IMPRESSION,
+        undefined,
+        this.data.details.widget_images![0].id
+      );
+      await this.userActionTrackService.trackUserAction(
+        this.campaignData.user_id,
+        this.data.id,
+        ActionType.IMPRESSION,
+        undefined,
+        this.data.details.widget_images![1].id
+      );
+    } catch (error) {
+      console.error('Error tracking impression:', error);
+    }
+  }
+
+  async trackClicks(index?: number): Promise<void> {
+    if (!this.campaignData?.user_id || !this.data?.id) return;
+
+    try {
+
+      const slideIndex = index !== undefined ? index : this.getCurrentSlideIndex();
+      const selectedImage = this.data.details.widget_images![slideIndex];
+
+      await this.userActionTrackService.trackUserAction(
+        this.campaignData.user_id,
+        this.data.id,
         ActionType.CLICK,
         undefined,
-        this.data.details.widget_images![this.getCurrentSlideIndex()].id,
+        selectedImage.id,
       );
 
-      window.open(this.data.details.widget_images![this.getCurrentSlideIndex()].link, '_blank', 'noopener,noreferrer');
+      window.open(selectedImage.link, '_blank', 'noopener,noreferrer');
     } catch (error) {
       console.error('Error tracking click:', error);
     }

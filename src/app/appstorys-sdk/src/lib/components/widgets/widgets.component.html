@@ -1,5 +1,7 @@
-<!-- <div
+<div
+  *ngIf="data?.details?.type === 'full'"
   class="carousel-container"
+  [style.height]="getHeight()"
   (touchstart)="onTouchStart($event)"
   (touchmove)="onTouchMove($event)"
   (touchend)="onTouchEnd()"
@@ -10,7 +12,11 @@
     [style.transition]="transition"
   >
     
-    <div class="carousel-item" *ngIf="items.length > 0">
+    <div
+    class="carousel-item"
+    [style.height]="getHeight()"
+    *ngIf="items.length > 0"
+    >
       <img 
         #carouselImage
         [src]="items[items.length - 1]" 
@@ -20,7 +26,11 @@
     </div>
 
 
-    <div class="carousel-item" *ngFor="let item of items">
+    <div
+    class="carousel-item"
+    [style.height]="getHeight()"
+    *ngFor="let item of items"
+    >
       <img 
         #carouselImage
         [src]="item" 
@@ -30,7 +40,11 @@
     </div>
 
 
-    <div class="carousel-item" *ngIf="items.length > 0">
+    <div
+    class="carousel-item"
+    [style.height]="getHeight()"
+    *ngIf="items.length > 0"
+    >
       <img 
         #carouselImage
         [src]="items[0]" 
@@ -55,18 +69,21 @@
 
 
 
- -->
+<!-- Half widget -->
 
+<div *ngIf="data?.details?.type === 'half'" class="half-widget-container">
+  <div
+  class="half-widget"
+  [style.height]="getHeight()"
+  >
 
-
-
-<div class="half-widget-container">
-  <div class="half-widget half-left-widget">
-
-    <img #carouselImage [src]="items[0]" alt="Carousel item" (click)="trackClicks()" />
+    <img #carouselImage [src]="items[0]" alt="Carousel item" (click)="trackClicks(0)" />
   </div>
-  <div class="half-widget half-right-widget">
+  <div
+  class="half-widget"
+  [style.height]="getHeight()"
+  >
 
-    <img #carouselImage [src]="items[1]" alt="Carousel item" (click)="trackClicks()" />
+    <img #carouselImage [src]="items[1]" alt="Carousel item" (click)="trackClicks(1)" />
   </div>
 </div>

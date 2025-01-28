@@ -1,9 +1,8 @@
 <div *ngIf="pipData?.details && pipVisible" class="pip-container" [style.top.px]="position.y"
   [style.left.px]="position.x">
-  <div *ngIf="!fullScreenPipVisible" #pipRef class="pip-window" (mousedown)="handleStart($event)"
-    (touchstart)="handleStart($event)" (mousemove)="handleMove($event)" (touchmove)="handleMove($event)"
-    (mouseup)="handleEnd($event)" (touchend)="handleEnd($event)">
-    <!-- <img [src]="assets/black_cross.png" alt="close" class="close-button" (click)="handleCloseClick($event)" /> -->
+  <div *ngIf="!fullScreenPipVisible" #pipRef class="pip-window" 
+    (mousedown)="handleStart($event)"
+    (touchstart)="handleStart($event)">
     <div (click)="handleCloseClick($event)" class="close-button">
       <span class="material-icons close-icon"></span>
     </div>
@@ -14,19 +13,11 @@
     <div class="fullscreen-content">
       <div class="video-container">
         <div class="controls-container">
-          <!-- <button (click)="togglePause()" class="control-button">
-              <img
-                [src]="isPaused ? '../../assets/pause_image.png' : '../../assets/pause_image.png'"
-                [alt]="isPaused ? 'Play' : 'Pause'"
-                class="control-icon"
-              />
-            </button> -->
           <button (click)="togglePause()" class="control-button" style="margin-top: 10px;">
-            <span class="material-icons" style="font-size: 24px; ">
+            <span class="material-icons" style="font-size: 24px;">
               {{ isPaused ? 'play_arrow' : 'pause' }}
             </span>
           </button>
-
         </div>
         <div class="main-video-container">
           <video #videoRef [src]="pipData?.details?.large_video" class="main-video" autoplay loop playsinline></video>
@@ -42,7 +33,6 @@
       <button (click)="closeFullScreen()" class="close-fullscreen-button">
         <span class="material-icons close-icon">close</span>
       </button>
-
     </div>
   </div>
 </div>
