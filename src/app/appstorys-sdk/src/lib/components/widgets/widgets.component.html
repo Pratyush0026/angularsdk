@@ -1,4 +1,4 @@
-<div
+<!-- <div
   class="carousel-container"
   (touchstart)="onTouchStart($event)"
   (touchmove)="onTouchMove($event)"
@@ -9,7 +9,7 @@
     [style.transform]="'translateX(' + translateX + '%)'"
     [style.transition]="transition"
   >
-    <!-- Duplicate last item for seamless looping -->
+    
     <div class="carousel-item" *ngIf="items.length > 0">
       <img 
         #carouselImage
@@ -19,7 +19,7 @@
       />
     </div>
 
-    <!-- Original items -->
+
     <div class="carousel-item" *ngFor="let item of items">
       <img 
         #carouselImage
@@ -29,7 +29,7 @@
       />
     </div>
 
-    <!-- Duplicate first item for seamless looping -->
+
     <div class="carousel-item" *ngIf="items.length > 0">
       <img 
         #carouselImage
@@ -40,16 +40,33 @@
     </div>
   </div>
 
-  <!-- Control arrows (hidden on smaller screens) -->
+ 
   <button class="nav-btn prev" (click)="prevSlide()" *ngIf="!isMobileView">&#10094;</button>
   <button class="nav-btn next" (click)="nextSlide()" *ngIf="!isMobileView">&#10095;</button>
 
-  <!-- Dots indicator -->
   <div class="dots-container">
     <span
       class="dot"
       *ngFor="let item of items; let i = index"
       [class.active]="getCurrentSlideIndex() === i"
     ></span>
+  </div>
+</div>
+
+
+
+ -->
+
+
+
+
+<div class="half-widget-container">
+  <div class="half-widget half-left-widget">
+
+    <img #carouselImage [src]="items[0]" alt="Carousel item" (click)="trackClicks()" />
+  </div>
+  <div class="half-widget half-right-widget">
+
+    <img #carouselImage [src]="items[1]" alt="Carousel item" (click)="trackClicks()" />
   </div>
 </div>
