@@ -11,6 +11,9 @@ interface Campaign {
     small_video: string;
     large_video: string;
     link: string;
+    button_text?: string;
+    width?: number;
+    height?: number;
   };
 }
 
@@ -32,12 +35,20 @@ export class PipComponent implements OnInit, OnDestroy {
   fullScreenPipVisible = false;
   isPaused = false;
   pipData: Campaign | undefined;
-  
-  position = {
-    x: window.innerWidth - 180,
-    y: window.innerHeight - 230
-  };
-  
+
+  isMuted = true;
+  @ViewChild('smallVideoRef') smallVideoRef!: ElementRef<HTMLVideoElement>;
+
+  position = { x: 0, y: 0 };
+
+  private getWidthValue(): number {
+    return this.pipData?.details?.width || 150;
+  }
+
+  private getHeightValue(): number {
+    return this.pipData?.details?.height || 200;
+  }
+
   dragging = false;
   rel = { x: 0, y: 0 };
   dragStart = { x: 0, y: 0 };
@@ -79,9 +90,29 @@ export class PipComponent implements OnInit, OnDestroy {
     const pip = this.campaigns.find(val => val.campaign_type === 'PIP');
     if (pip) {
       this.pipData = pip;
-      this.trackImpression();
+      // Calculate position after pipData is set
+      this.calculateInitialPosition();
+      await this.trackImpression();
     }
     this.cdr.detectChanges();
+  }
+
+  getWidth(): string {
+    return `${this.getWidthValue()}px`;
+  }
+
+  getHeight(): string {
+    return `${this.getHeightValue()}px`;
+  }
+
+  private calculateInitialPosition(): void {
+    const width = this.getWidthValue();
+    const height = this.getHeightValue();
+    
+    this.position = {
+      x: Math.max(this.margin, window.innerWidth - (width + 30)),
+      y: Math.max(this.margin, window.innerHeight - (height + 30))
+    };
   }
 
   private async trackImpression(): Promise<void> {
@@ -98,13 +129,45 @@ export class PipComponent implements OnInit, OnDestroy {
     }
   }
 
+  handleMuteClick(e: Event): void {
+    e.stopPropagation();
+    this.isMuted = !this.isMuted;
+    if (this.smallVideoRef?.nativeElement) {
+      this.smallVideoRef.nativeElement.muted = this.isMuted;
+    }
+    this.cdr.detectChanges();
+  }
+
+  get isFullscreenMuted(): boolean {
+    return this.videoRef?.nativeElement?.muted ?? false;
+  }
+
+  handleExpandClick(e: Event): void {
+    e.stopPropagation();
+    this.fullScreenPipVisible = true;
+    if (this.fullScreenPipVisible) {
+      this.trackImpression();
+      // Set fullscreen video to unmuted when expanding
+      setTimeout(() => {
+        if (this.videoRef?.nativeElement) {
+          this.videoRef.nativeElement.muted = false;
+        }
+        this.cdr.detectChanges();
+      });
+    }
+    document.body.style.overflow = 'hidden';
+    this.cdr.detectChanges();
+  }
+
+
+
   handleStart(e: MouseEvent | TouchEvent): void {
     if (e.cancelable) {
       e.preventDefault();
     }
 
     const target = e.target as HTMLElement;
-    if (target.closest('.close-button')) {
+    if (target.closest('.pip-control')) {
       return;
     }
 
@@ -133,11 +196,14 @@ export class PipComponent implements OnInit, OnDestroy {
       const newX = clientX - this.rel.x;
       const newY = clientY - this.rel.y;
 
+      const width = this.getWidthValue();
+      const height = this.getHeightValue();
+
       this.position = {
-        x: Math.max(this.margin, Math.min(newX, window.innerWidth - 150 - this.margin)),
-        y: Math.max(this.margin, Math.min(newY, window.innerHeight - 200 - this.margin))
+        x: Math.max(this.margin, Math.min(newX, window.innerWidth - width - this.margin)),
+        y: Math.max(this.margin, Math.min(newY, window.innerHeight - height - this.margin))
       };
-      
+
       this.cdr.detectChanges();
     });
   }
@@ -163,16 +229,30 @@ export class PipComponent implements OnInit, OnDestroy {
   }
 
   private handleResize(): void {
+    const width = this.getWidthValue();
+    const height = this.getHeightValue();
+
     this.position = {
-      x: Math.min(this.position.x, window.innerWidth - 150 - this.margin),
-      y: Math.min(this.position.y, window.innerHeight - 200 - this.margin)
+      x: Math.min(this.position.x, window.innerWidth - width - this.margin),
+      y: Math.min(this.position.y, window.innerHeight - height - this.margin)
     };
     this.cdr.detectChanges();
   }
 
-  handleVideoClick(): void {
+  // Add new method for toggling mute
+  toggleMute(): void {
+    if (this.videoRef?.nativeElement) {
+      this.videoRef.nativeElement.muted = !this.videoRef.nativeElement.muted;
+      this.cdr.detectChanges();
+    }
+  }
+
+  handleVideoClick(e?: Event): void {
+    if (e) {
+      e.stopPropagation();
+    }
     this.fullScreenPipVisible = true;
-    if(this.fullScreenPipVisible){
+    if (this.fullScreenPipVisible) {
       this.trackImpression();
     }
     document.body.style.overflow = 'hidden';
@@ -198,10 +278,18 @@ export class PipComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  closeFullScreen(): void {
+  minimizeFullScreen(): void {
     this.fullScreenPipVisible = false;
     document.body.style.overflow = 'auto';
     this.cdr.detectChanges();
+  }
+
+
+  closeFullScreen(e: Event): void {
+    this.fullScreenPipVisible = false;
+    document.body.style.overflow = 'auto';
+    this.cdr.detectChanges();
+    this.handleCloseClick(e);
   }
 
   private disableSelection(): void {

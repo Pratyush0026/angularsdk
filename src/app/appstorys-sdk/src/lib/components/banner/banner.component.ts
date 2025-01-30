@@ -16,6 +16,7 @@ export class BannerComponent implements OnInit, OnChanges {
   
   bannerVisible = true;
   data?: MediaCampaign;
+  cachedImageUrl?: string;
 
   constructor(private userActionTrackService: TrackUserActionService) {}
 
@@ -29,7 +30,7 @@ export class BannerComponent implements OnInit, OnChanges {
     }
   }
 
-  private initializeBanner(): void {
+  private async initializeBanner(): Promise<void> {
     if (!this.campaignData?.campaigns) return;
 
     const banners = this.campaignData.campaigns

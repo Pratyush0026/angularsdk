@@ -2,6 +2,7 @@
   *ngIf="data?.details?.type === 'full'"
   class="carousel-container"
   [style.height]="getHeight()"
+  [style.width]="getWidth()"
   (touchstart)="onTouchStart($event)"
   (touchmove)="onTouchMove($event)"
   (touchend)="onTouchEnd()"
@@ -71,7 +72,7 @@
 
 <!-- Half widget -->
 
-<div *ngIf="data?.details?.type === 'half'" class="half-widget-container">
+<div *ngIf="data?.details?.type === 'half'" class="half-widget-container" [style.width]="getWidth()">
   <div
   class="half-widget"
   [style.height]="getHeight()"

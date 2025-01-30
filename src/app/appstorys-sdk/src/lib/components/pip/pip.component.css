@@ -1,7 +1,4 @@
-
-
-
-  /* pip.component.css */
+/* pip.component.css */
 .pip-container {
   position: fixed;
   user-select: none;
@@ -10,8 +7,6 @@
 }
 
 .pip-window {
-  height: 200px;
-  width: 150px;
   position: relative;
   margin-bottom: 10px;
   cursor: grab;
@@ -20,89 +15,39 @@
   -moz-user-select: none;
   -ms-user-select: none;
 }
-/* 
-.close-button {
-  position: absolute;
-  height: 20px;
-  width: 20px;
-  background-color: white;
-  border-radius: 50%;
-  top: -1px;
-  right: -1px;
-  cursor: pointer;
-  user-select: none;
-  z-index: 1000;
-} */
-
-
-.close-button {
-  position: absolute;
-  height: 20px;
-  width: 20px;
-  background-color: black;
-  color: white;
-  border-radius: 50%;
-  top: 1.5px;
-  right: 1.5px;
-  cursor: pointer;
-  user-select: none;
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.close-button::before,
-.close-button::after {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 2px;
-  background-color: white;  /* Cross color */
-  border-radius: 1px;
-  display: block;
-}
-
-.close-button::before {
-  transform: rotate(45deg); /* Diagonal part of the cross */
-}
-
-.close-button::after {
-  transform: rotate(-45deg); /* Diagonal part of the cross */
-}
 
 .pip-video {
   height: 100%;
   width: 100%;
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: 0.8rem;
   user-select: none;
   draggable: false;
 }
 
 
 .fullscreen-container {
-  height: 100%; 
+  height: 100%;
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.85); 
-  display: flex; 
-  flex-direction: column; 
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
 }
 
 
 
 .fullscreen-content {
-  height: 90%; 
+  height: 90%;
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1500;
-  position: relative; 
+  position: relative;
 }
 
 .video-container {
@@ -127,15 +72,19 @@
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-video-container {
   width: 100%;
-  height: 100%; 
+  height: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
 }
+
 .main-video {
   width: 100%;
   height: 100%;
@@ -149,7 +98,7 @@
   display: flex;
   justify-content: center;
   position: absolute;
-  bottom: 50px; 
+  bottom: 28px;
   left: 0;
 }
 
@@ -167,53 +116,91 @@
 
 .close-fullscreen-button {
   position: fixed;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: 10px;
+  right: 10px;
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.275);
   color: white;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.control-button {
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.control-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.material-icons {
+  font-size: 20px;
 }
 
 
+.pip-control {
+  transform: scale(0.75);
+  padding: 6px;
+  background-color: black;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 2;
+}
 
+.close-position {
+  top: 2px;
+  right: 2px;
+}
+
+.expand-position {
+  bottom: 2px;
+  right: 2px;
+}
+
+.mute-position {
+  top: 2px;
+  left: 2px;
+}
 
 @media (max-width: 768px) {
   .fullscreen-container {
-    height: 100%; 
+    height: 100%;
   }
-  
- 
+
+
   .main-video-container {
-    height: 100%; 
+    height: 100%;
   }
-  
+
   .main-video {
-    height: 100%; 
+    height: 100%;
   }
 
   .cta-button {
-    bottom: 15%; 
+    bottom: 15%;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

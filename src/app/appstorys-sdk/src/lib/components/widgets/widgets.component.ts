@@ -24,6 +24,7 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
   private touchEndX: number = 0;
   private observer: IntersectionObserver | null = null;
   private trackedImageIds: Set<string> = new Set();
+  private autoSlideInterval: any;
 
   constructor(
     private userActionTrackService: TrackUserActionService,
@@ -34,6 +35,7 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnInit(): void {
     this.initializeWidgets();
+    this.startAutoSlide();
   }
 
   ngAfterViewInit(): void {
@@ -47,6 +49,20 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
   ngOnDestroy(): void {
     if (this.observer) {
       this.observer.disconnect();
+    }
+    this.stopAutoSlide();
+  }
+
+  private startAutoSlide(): void {
+    this.autoSlideInterval = setInterval(() => {
+      this.nextSlide();
+    }, 5000); // 5000 milliseconds = 5 seconds
+  }
+
+  // New method to stop auto-sliding
+  private stopAutoSlide(): void {
+    if (this.autoSlideInterval) {
+      clearInterval(this.autoSlideInterval);
     }
   }
 
@@ -191,32 +207,35 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   nextSlide(): void {
+    this.stopAutoSlide(); // Stop the current interval
     this.transition = 'transform 0.5s ease-in-out';
     this.currentIndex++;
 
     if (this.currentIndex === this.items.length + 1) {
-      // After the transition, jump to the first real slide
       setTimeout(() => {
         this.transition = 'none';
         this.currentIndex = 1;
-      }, 500); // Match the transition duration
+      }, 500);
     }
+    this.startAutoSlide(); // Restart the interval
   }
 
   prevSlide(): void {
+    this.stopAutoSlide(); // Stop the current interval
     this.transition = 'transform 0.5s ease-in-out';
     this.currentIndex--;
 
     if (this.currentIndex === 0) {
-      // After the transition, jump to the last real slide
       setTimeout(() => {
         this.transition = 'none';
         this.currentIndex = this.items.length;
-      }, 500); // Match the transition duration
+      }, 500);
     }
+    this.startAutoSlide(); // Restart the interval
   }
 
   onTouchStart(event: TouchEvent): void {
+    this.stopAutoSlide(); // Stop auto-sliding when user starts touching
     this.touchStartX = event.touches[0].clientX;
   }
 
@@ -226,17 +245,16 @@ export class WidgetsComponent implements OnInit, OnChanges, AfterViewInit {
 
   onTouchEnd(): void {
     const deltaX = this.touchStartX - this.touchEndX;
-    const threshold = 50; // Minimum swipe distance to trigger slide
+    const threshold = 50;
 
     if (deltaX > threshold) {
-      // Swipe left
       this.nextSlide();
     } else if (deltaX < -threshold) {
-      // Swipe right
       this.prevSlide();
+    } else {
+      this.startAutoSlide(); // Restart auto-sliding if no slide change occurred
     }
 
-    // Reset touch positions
     this.touchStartX = 0;
     this.touchEndX = 0;
   }
