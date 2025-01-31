@@ -41,9 +41,14 @@ export class FloaterComponent implements OnInit, OnChanges {
   }
 
   getPosition(): { [key: string]: string } {
-    return {
+    return this.data?.details?.position === 'left' ? {
+      alignItems: 'flex-start',
+      // right: '20px',
+      left: '20px'
+    } : {
+      alignItems: 'flex-end',
       right: '20px',
-      left: 'auto'
+      // left: '20px'
     };
   }
 

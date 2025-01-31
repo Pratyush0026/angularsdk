@@ -14,6 +14,7 @@ interface Campaign {
     button_text?: string;
     width?: number;
     height?: number;
+    position?: string;
   };
 }
 
@@ -109,7 +110,10 @@ export class PipComponent implements OnInit, OnDestroy {
     const width = this.getWidthValue();
     const height = this.getHeightValue();
     
-    this.position = {
+    this.position = this.pipData?.details?.position === 'left' ? {
+      x: this.margin,
+      y: Math.max(this.margin, window.innerHeight - (height + 30))
+    } : {
       x: Math.max(this.margin, window.innerWidth - (width + 30)),
       y: Math.max(this.margin, window.innerHeight - (height + 30))
     };
@@ -130,6 +134,7 @@ export class PipComponent implements OnInit, OnDestroy {
   }
 
   handleMuteClick(e: Event): void {
+    e.preventDefault();
     e.stopPropagation();
     this.isMuted = !this.isMuted;
     if (this.smallVideoRef?.nativeElement) {

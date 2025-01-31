@@ -3,19 +3,19 @@
   <div *ngIf="!fullScreenPipVisible" #pipRef class="pip-window" [style.width]="getWidth()" [style.height]="getHeight()"
     (mousedown)="handleStart($event)" (touchstart)="handleStart($event)">
     <!-- Mute button -->
-    <div (click)="handleMuteClick($event)" class="control-button pip-control">
+    <div (click)="handleMuteClick($event)" (touchstart)="handleMuteClick($event)" class="control-button pip-control">
       <span class="material-icons">
         {{ isMuted ? 'volume_off' : 'volume_up' }}
       </span>
     </div>
 
     <!-- Close button -->
-    <div (click)="handleCloseClick($event)" class="control-button pip-control close-position">
+    <div (click)="handleCloseClick($event)" (touchstart)="handleCloseClick($event)" class="control-button pip-control close-position">
       <span class="material-icons">close</span>
     </div>
 
     <!-- Expand button -->
-    <div (click)="handleExpandClick($event)" class="control-button pip-control expand-position">
+    <div (click)="handleExpandClick($event)" (touchstart)="handleExpandClick($event)" class="control-button pip-control expand-position">
       <span class="material-icons">open_in_full</span>
     </div>
 
