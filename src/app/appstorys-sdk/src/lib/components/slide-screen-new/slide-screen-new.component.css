@@ -30,14 +30,6 @@
   cursor: pointer;
 }
 
-.navigation-button img {
-  height: 25px;
-}
-
-.navigation-button img.rotate {
-  transform: rotate(180deg);
-}
-
 .slide-main {
   width: 100%;
   max-width: 350px; /* Adjust as needed */
@@ -155,6 +147,7 @@
   display: flex;
   justify-content: center;
   text-align: center;
+  font-family: sans-serif;
 }
 
 .link-button {

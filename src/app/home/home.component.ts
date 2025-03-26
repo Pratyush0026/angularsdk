@@ -16,6 +16,7 @@ import { WidgetsComponent } from "../appstorys-sdk/src/lib/components/widgets/wi
 import { StoriesComponent } from "../appstorys-sdk/src/lib/components/stories/stories.component";
 import { Observable } from 'rxjs';
 import { PipComponent } from "../appstorys-sdk/src/lib/components/pip/pip.component";
+import { ReelsComponent } from "../appstorys-sdk/src/lib/components/reels/reels.component";
 
 @Component({
   selector: 'app-home',
@@ -27,7 +28,8 @@ import { PipComponent } from "../appstorys-sdk/src/lib/components/pip/pip.compon
     BannerComponent,
     WidgetsComponent,
     StoriesComponent,
-    PipComponent
+    PipComponent,
+    ReelsComponent
 ],
   providers: [AppStorysService],
   templateUrl: './home.component.html',
@@ -38,18 +40,23 @@ export class HomeComponent implements OnInit {
   private readonly accountId = '4350bf8e-0c9a-46bd-b953-abb65ab21d11';
   private readonly userId = 'akdnnqsdqsdqsdsa';
   private readonly screenName = 'Home Screen';
+  private readonly attributes = [
+    {
+      'key': 'value'
+    }
+  ];
 
   readonly features: Feature[] = features;
   readonly testimonials: Testimonial[] = testimonials;
 
-  isLoading$ = new BehaviorSubject<boolean>(false);
+  // isLoading$ = new BehaviorSubject<boolean>(false);
   error$ = new BehaviorSubject<string | null>(null);
   campaignData$ = new BehaviorSubject<CampaignData | null>(null);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private appStorysService: AppStorysService
-  ) {}
+  ) { }
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
@@ -64,37 +71,32 @@ export class HomeComponent implements OnInit {
   }
 
   private async initializeCampaigns(): Promise<void> {
-    this.isLoading$.next(true);
-    
+    // this.isLoading$.next(true);
+
     try {
-      await this.appStorysService.verifyAccount(this.accountId, this.appId);
-      
-      const accessToken = await this.appStorysService.getAccessToken();
-      if (!accessToken) {
-        throw new Error('Access token not found');
-      }
 
-      const screenData = await this.appStorysService.trackScreen(this.appId, this.screenName);
-      if (!screenData?.campaigns) {
-        throw new Error('No campaigns available');
-      }
-
-      const userData = await this.appStorysService.verifyUser(this.userId, screenData);
-      if (!userData) {
-        throw new Error('Failed to get user campaign data');
-      }
+      const { accessToken, userData } = await this.appStorysService.initialize(
+        this.appId,
+        this.accountId,
+        this.userId,
+        this.screenName,
+        this.attributes,
+      );
 
       this.campaignData$.next({
         campaigns: userData.campaigns,
-        access_token: accessToken,
+        access_token: accessToken!,
         user_id: this.userId
       });
+
+      console.log('Campaigns initialized:', userData.campaigns);
 
     } catch (error) {
       console.error('Error initializing campaigns:', error);
       this.error$.next('Failed to initialize campaigns');
-    } finally {
-      this.isLoading$.next(false);
     }
+    // finally {
+    //   this.isLoading$.next(false);
+    // }
   }
 }

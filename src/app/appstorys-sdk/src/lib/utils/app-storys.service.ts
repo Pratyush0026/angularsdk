@@ -37,4 +37,24 @@ export class AppStorysService {
   async verifyUser(userId: string, campaigns: any): Promise<any> {
     return this.verifyUserService.verifyUser(userId, campaigns);
   }
+
+  async initialize(appId: string, accountId: string, userId: string, screenName: string, attributes?: any): Promise<any> {
+
+    await this.verifyAccount(accountId, appId);
+
+    const screenData = await this.trackScreen(appId, screenName);
+      if (!screenData?.campaigns) {
+        throw new Error('No campaigns available');
+      }
+
+      const userData = await this.verifyUser(userId, screenData);
+      if (!userData) {
+        throw new Error('Failed to get user campaign data');
+      }
+
+      const accessToken = await this.getAccessToken();
+
+      return { accessToken, userData };
+    // return this.verifyUserService.verifyUser(userId, campaigns);
+  }
 }

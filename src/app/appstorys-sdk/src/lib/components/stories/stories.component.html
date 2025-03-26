@@ -1,7 +1,8 @@
 <!-- stories.component.html -->
 <div class="stories-container">
     <div class="stories-scroll">
-      <div *ngFor="let storyGroup of data?.details; let i = index" 
+      <!-- <div *ngFor="let storyGroup of data!.details.slice().reverse(); let i = index"  -->
+      <div *ngFor="let storyGroup of data?.details; let i = index"
            class="story-item">
         <div class="story-content">
           <div class="story-thumbnail"

@@ -5,14 +5,14 @@
     align-items: center;
     width: 100%;
     position: relative;
-    padding: 0 5px;
+    padding: 0;
   }
   
   .stories-scroll {
     display: flex;
     overflow-x: auto;
     white-space: nowrap;
-    gap: 15px;
+    gap: 0px;
     scrollbar-width: none; 
     -ms-overflow-style: none; 
   }
@@ -23,7 +23,7 @@
   
   .story-item {
     flex-shrink: 0;
-    height: 135px;
+    /* height: 120px; */
     width: 100px;
     background: transparent;
     display: flex;
@@ -33,18 +33,17 @@
   }
   
   .story-content {
-    margin-top: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
   
   .story-thumbnail {
-    height: 82px;
-    width: 82px;
+    height: 66px;
+    width: 66px;
     border-radius: 50%;
     padding: 5px;
-    border-width: 2px;
+    border: 2px solid;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -57,7 +56,8 @@
   }
   
   .story-name {
-    margin-top: 2px;
+    margin-bottom: 6px;
+    margin-top: 6px;
     font-size: 14px;
     text-align: center;
   }

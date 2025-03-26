@@ -59,6 +59,9 @@ export class StoriesComponent implements OnInit, OnChanges {
   }
 
   handleOpenSlideScreen(storyGroupIndex: number) {
+
+    // const originalIndex = this.data?.details ? this.data.details.length - 1 - storyGroupIndex : -1;
+
     this.slideScreenVisible = true;
     this.slidesData = this.data!;
     this.currentGroupIndex = storyGroupIndex;

@@ -1,0 +1,92 @@
+/* reel-full-screen.component.css */
+.full-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Black background with 80% opacity */
+    z-index: 1000;
+    color: white;
+  }
+  .full-screen-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .reel-slide {
+    display: none;
+    width: 100%;
+    height: 95%;
+  }
+  .reel-slide.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .reel-video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+  .close-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    color: white;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  .reel-desc{
+    width: 23%;
+    /* height: 50%; */
+    /* background: red; */
+    position: absolute;
+    bottom: 2.5%;
+    /* opacity: 20%; */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-radius: 12px;
+  }
+  .inner-reel-desc{
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    bottom: 0%;
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3vh;
+    border-radius: 0 0 12px 12px;
+  }
+  .reel-like-button,.reel-dislike-button{
+    margin-right: 1.3vw;
+    width: auto;
+    margin-bottom: 3vh;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: white;
+    cursor: pointer;
+  }
+  .reel-description{
+    padding: 0 10px;
+    text-align: start;
+    width: 90%;
+  }
+  .reel-desc-button{
+    align-self: center;
+    margin: 3vh 0;
+    width: 80%;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: none;
+  }

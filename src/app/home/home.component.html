@@ -1,19 +1,20 @@
 <div class="homepage-container">
-  @if (isLoading$ | async) {
+  <!-- @if (isLoading$ | async) {
     <div class="loading">Loading campaigns...</div>
   } @else {
     @if (error$ | async; as error) {
       <div class="error-message">{{ error }}</div>
-    }
+    } -->
     
     @if (campaignData$ | async; as campaignData) {
-      <app-floater [campaignData]="campaignData"></app-floater>
-      <app-banner [campaignData]="campaignData"></app-banner>
-      <!-- <app-stories [campaignData]="campaignData"></app-stories> -->
+      <!-- <app-floater [campaignData]="campaignData"></app-floater> -->
+      <!-- <app-banner [campaignData]="campaignData"></app-banner> -->
+      <app-stories [campaignData]="campaignData"></app-stories>
       <app-pip [campaignData]="campaignData"></app-pip>
-      <app-widgets [campaignData]="campaignData"></app-widgets>
+      <app-reels [campaignData]="campaignData"></app-reels>
+      <!-- <app-widgets [campaignData]="campaignData"></app-widgets> -->
     }
-  }
+  <!-- } -->
 
   <div class="feature-grid">
     @for (feature of features; track feature.title) {

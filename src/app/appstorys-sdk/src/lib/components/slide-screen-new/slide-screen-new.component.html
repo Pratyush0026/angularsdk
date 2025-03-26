@@ -2,9 +2,7 @@
 <div class="slide-screen">
     <div class="slide-content">
       <button class="navigation-button prev" (click)="handlePrevious()">
-        <img [src]="'assets/white_arrow.png'" 
-             alt="Previous" 
-             class="rotate">
+        <span class="material-icons">arrow_back_ios</span>
       </button>
   
       <div class="slide-main">
@@ -19,13 +17,12 @@
   
           <div class="header-controls">
             <button class="control-button" (click)="togglePause()">
-              <img [src]="isPaused ? 'assets/play_image.png' : 'assets/pause_image.png'"
-                   [alt]="isPaused ? 'Play' : 'Pause'">
+              <span class="material-icons">
+                {{ isPaused ? 'play_arrow' : 'pause' }}
+              </span>
             </button>
             <button class="control-button" (click)="close()">
-              <img src="assets/close_image.png" 
-                   alt="Close" 
-                   class="close">
+              <span class="material-icons">close</span>
             </button>
           </div>
         </div>
@@ -45,7 +42,7 @@
           </div>
   
           <div *ngIf="!isContentReady" class="loader">
-            <img src="assets/Loader.gif" alt="Loading">
+            <span class="material-icons">refresh</span>
           </div>
   
           <img *ngIf="content[current]?.image"
@@ -78,7 +75,7 @@
       </div>
   
       <button class="navigation-button next" (click)="handleNext()">
-        <img src="assets/white_arrow.png" alt="Next">
+        <span class="material-icons">arrow_forward_ios</span>
       </button>
     </div>
   </div>
